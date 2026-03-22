@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
+    <style>
+        /* Modern CSS Reset & Variables */
+        :root {
+            --primary: #4A90E2;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --bg-color: #F4F7F6;
+            --surface: #FFFFFF;
+            --text-main: #2C3E50;
+            --text-muted: #7F8C8D;
+            --border-color: #E0E6ED;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--surface);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .back-btn:active {
+            transform: scale(0.9);
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* Form Container */
+        main {
+            padding: 24px 20px;
+            flex: 1;
+            animation: slideUpIn 0.5s ease forwards;
+        }
+
+        .event-summary {
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(194, 233, 251, 0.4) 100%);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .event-summary h2 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .event-summary p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Trendy Floating Label Inputs */
+        .input-group {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 20px 16px 8px;
+            font-size: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            color: var(--text-muted);
+            font-size: 16px;
+            pointer-events: none;
+            transition: var(--transition);
+            transform-origin: left top;
+        }
+
+        /* The Magic of Floating Labels */
+        .input-group input:focus,
+        .input-group input:not(:placeholder-shown) {
+            border-color: var(--primary);
+        }
+
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            transform: translateY(-10px) scale(0.75);
+            color: var(--primary);
+        }
+
+        /* Inline Error Validation Styling (NO ALERTS) */
+        .error-text {
+            color: var(--error);
+            font-size: 13px;
+            margin-top: 6px;
+            margin-left: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            /* Animation properties */
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .input-group.has-error input {
+            border-color: var(--error);
+            background: #FDEDEC;
+        }
+
+        .input-group.has-error label {
+            color: var(--error);
+        }
+
+        .input-group.has-error .error-text {
+            max-height: 30px; /* Expands smoothly */
+            opacity: 1;
+        }
+
+        /* Bottom Sticky Action */
+        .form-actions {
+            position: sticky;
+            bottom: 0;
+            padding: 20px;
+            background: var(--surface);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 16px rgba(74, 144, 226, 0.3);
+            transition: var(--transition);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.96);
+        }
+
+        .btn-submit.loading {
+            background: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .btn-submit.success {
+            background: var(--success);
+            box-shadow: 0 8px 16px rgba(46, 204, 113, 0.3);
+        }
+
+        /* Animations */
+        @keyframes slideUpIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="event-details.html" class="back-btn">←</a>
+        <h1>Secure Checkout</h1>
+    </header>
+
+    <main>
+        <div class="event-summary">
+            <h2>UI/UX Masterclass</h2>
+            <p>Sat, Mar 15 • City University Malaysia</p>
+        </div>
+
+        <form id="registrationForm" novalidate>
+            
+            <div class="input-group" id="nameGroup">
+                <input type="text" id="fullName" placeholder=" " autocomplete="off">
+                <label for="fullName">Full Name</label>
+                <div class="error-text">⚠️ Please enter your full name.</div>
+            </div>
+
+            <div class="input-group" id="emailGroup">
+                <input type="

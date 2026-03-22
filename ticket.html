@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Ticket - EventTide</title>
+    <style>
+        /* Modern CSS Reset & Variables */
+        :root {
+            --primary: #4A90E2;
+            --success: #2ECC71;
+            --bg-color: #F4F7F6;
+            --surface: #FFFFFF;
+            --text-main: #2C3E50;
+            --text-muted: #7F8C8D;
+            --ticket-bg: #FFFFFF;
+            --transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary); /* Vibrant background to make the ticket pop */
+            background-image: linear-gradient(135deg, #4A90E2 0%, #50A7C2 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Success Header Animation */
+        .success-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeDownIn 0.6s ease forwards;
+        }
+
+        .checkmark-circle {
+            width: 64px;
+            height: 64px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 16px rgba(46, 204, 113, 0.4);
+            animation: popIn 0.6s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform: scale(0);
+        }
+
+        .checkmark-circle svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+
+        .success-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* Digital Ticket Card */
+        .ticket {
+            background: var(--ticket-bg);
+            width: 100%;
+            max-width: 340px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: slideUpIn 0.7s 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        }
+
+        /* Top Section of Ticket */
+        .ticket-top {
+            padding: 30px 24px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            text-align: center;
+        }
+
+        .ticket-top h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .ticket-top p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .event-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            text-align: left;
+            background: var(--bg-color);
+            padding: 16px;
+            border-radius: 16px;
+        }
+
+        .detail-item span {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .detail-item strong {
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        /* Ticket Divider with Cutouts to look like a real stub */
+        .ticket-divider {
+            height: 2px;
+            background-image: linear-gradient(to right, #E0E6ED 50%, transparent 50%);
+            background-size: 12px 2px;
+            background-repeat: repeat-x;
+            position: relative;
+        }
+
+        .ticket-divider::before,
+        .ticket-divider::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            width: 24px;
+            height: 24px;
+            background-color: #50A7C2; /* Matches body background */
+            border-radius: 50%;
+        }
+
+        .ticket-divider::before {
+            left: -12px;
+        }
+
+        .ticket-divider::after {
+            right: -12px;
+        }
+
+        /* Bottom Section of Ticket (QR Code & Name) */
+        .ticket-bottom {
+            padding: 30px 24px;
+            text-align: center;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+        }
+
+        .attendee-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .ticket-type {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .qr-code {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #E0E6ED;
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 340px;
+            opacity: 0;
+            animation: fadeIn 0.5s 1s ease forwards;
+        }
+
+        .btn {
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+
+        .btn-light {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-light:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.96);
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeDownIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            to { transform: scale(1); }
+        }
+
+        @keyframes slideUpIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="success-header">
+        <div class="checkmark-circle">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+        <h1>You're Going!</h1>
+    </div>
+
+    <div class="ticket">
+        <div class="ticket-top">
+            <h2>UI/UX Masterclass</h2>
+            <p>City University Malaysia</p>
+            
+            <div class="event-details-grid">
+                <div class="detail-item">
+                    <span>Date</span>
+                    <strong>Mar 15, 2026</strong>
+                </div>
+                <div class="detail-item">
+                    <span>Time</span>
+                    <strong>10:00 AM</strong>
+                </div>
+                <div class="detail-item" style="grid-column: span 2;">
+                    <span>Location</span>
+                    <strong>Main Hall, Block A</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticket-divider"></div>
+
+        <div class="ticket-bottom">
+            <div class="attendee-name">Nahid Jahan</div>
+            <div class="ticket-type">General Admission</div>
+            
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=EventTide_NahidJahan_Ticket" alt="Ticket QR Code">
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="index.html" class="btn btn-light">
+            <span>🏠 Return to Home</span>
+        </a>
+    </div>
+
+</body>
+</html>
